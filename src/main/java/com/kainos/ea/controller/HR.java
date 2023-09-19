@@ -55,9 +55,12 @@ public class HR {
     public Response getEmployeeById(@PathParam("employeeId") int employeeId) {
         try {
             return Response.status(HttpStatus.OK_200).entity(employeeService.getEmployee(employeeId)).build();
-        } catch (SQLException | DatabaseConnectionException | UserDoesNotExistException e) {
+        } catch (SQLException | DatabaseConnectionException e) {
             System.out.println(e);
             return Response.status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        } catch (UserDoesNotExistException e) {
+            System.out.println(e);
+            return Response.status(HttpStatus.BAD_REQUEST_400).build();
         }
     }
 
@@ -77,16 +80,21 @@ public class HR {
     @Path("/employee")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createEmployee(EmployeeRequest employee) throws DatabaseConnectionException, SalaryTooLowException, BankNumberLengthException, FirstNameLengthException, LastNameLengthException, NinLengthException {
-        if (employeeValidator.isValidEmployee(employee)) {
-            try {
-                int id = employeeService.insertEmployee(employee);
-                return Response.status(HttpStatus.CREATED_201).entity(id).build();
-            } catch (Exception e) {
-                System.out.println(e);
-                return Response.status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+    public Response createEmployee(EmployeeRequest employee) {
+        try {
+            if (employeeValidator.isValidEmployee(employee)) {
+                try {
+                    int id = employeeService.insertEmployee(employee);
+                    return Response.status(HttpStatus.CREATED_201).entity(id).build();
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return Response.status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+                }
+            } else {
+                return Response.status(HttpStatus.BAD_REQUEST_400).build();
             }
-        } else {
+        } catch (SalaryTooLowException | BankNumberLengthException | FirstNameLengthException |
+                 LastNameLengthException | NinLengthException | DatabaseConnectionException e) {
             return Response.status(HttpStatus.BAD_REQUEST_400).build();
         }
     }
