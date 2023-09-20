@@ -32,6 +32,33 @@ public class EmployeeRequest {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof EmployeeRequest)) {
+            return false;
+        }
+
+        EmployeeRequest other = (EmployeeRequest) obj;
+
+        return (this.salary == other.salary &&
+                this.fname.equals(other.fname) &&
+                this.lname.equals(other.lname) &&
+                this.email.equals(other.email) &&
+                this.address.equals(other.address) &&
+                this.address2.equals(other.address2) &&
+                this.city.equals(other.city) &&
+                this.county.equals(other.county) &&
+                this.postalCode.equals(other.postalCode) &&
+                this.country.equals(other.country) &&
+                this.phoneNo.equals(other.phoneNo) &&
+                this.bankNo.equals(other.bankNo) &&
+                this.nin.equals(other.nin));
+    }
+
     @JsonCreator
     public EmployeeRequest(
             @JsonProperty("salary") float salary,
